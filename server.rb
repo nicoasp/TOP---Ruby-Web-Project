@@ -1,5 +1,6 @@
 require 'socket'
-
+require 'json'
+require 'erb'
 
 
 server = TCPServer.open(2000)
@@ -31,6 +32,15 @@ loop {
 
 	when "POST"
 		client.puts "POST request"
+		client.gets
+		client.gets
+		client.gets
+		content = client.gets
+		params = JSON.parse(content)
+		template = File.read("./thanks.erb")
+		data = "<li>Name: #{params[:viking][:name]}</li><li>Email: #{params[:viking][:email]}"
+		template.gsub!("<%= yield %>", data)
+		client.puts f
 	else
 		client.puts "Invalid request"
 	end
@@ -40,4 +50,5 @@ loop {
 
 	client.puts "Closing the connection. Bye!"
 	client.close
+	puts params
 }
