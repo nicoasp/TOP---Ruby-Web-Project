@@ -13,7 +13,6 @@ socket = TCPSocket.open(host, port)
 socket.puts(request)
 
 
-
 if request_type == "POST"
 	puts "Type the name of your Viking"
 	name = gets.chomp

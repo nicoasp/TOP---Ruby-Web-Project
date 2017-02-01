@@ -1,6 +1,5 @@
 require 'socket'
 require 'json'
-require 'erb'
 
 
 server = TCPServer.open(2000)
@@ -9,13 +8,9 @@ loop {
 	req = client.gets.split
 	case req[0]
 	when "GET"
-		client.puts "GET request!"
 		path = req[1]
-		status_code = 0
-		reason_phrase = ""
 		body = ""
-		success = File.exist?(path)
-		if success
+		if File.exist?(path)
 			body = File.read(path)
 			status_code = 200
 			reason_phrase = "OK"
@@ -31,24 +26,23 @@ loop {
 		client.puts	"#{body}"
 
 	when "POST"
-		client.puts "POST request"
 		client.gets
 		client.gets
 		client.gets
 		content = client.gets
 		params = JSON.parse(content)
-		template = File.read("./thanks.erb")
-		data = "<li>Name: #{params[:viking][:name]}</li><li>Email: #{params[:viking][:email]}"
+		template = File.read("./thanks.html")
+		data = "<li>Name: #{params["viking"]["name"]}</li><li>Email: #{params["viking"]["email"]}</li>"
 		template.gsub!("<%= yield %>", data)
-		client.puts f
+		client.puts template
 	else
 		client.puts "Invalid request"
 	end
-
-
-
 
 	client.puts "Closing the connection. Bye!"
 	client.close
 	puts params
 }
+
+
+
